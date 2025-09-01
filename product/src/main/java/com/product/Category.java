@@ -127,7 +127,7 @@ public class Category {
     public static boolean createCategory(Category category) {
         for (Category c : categories) {
             if (c.getCategory().equals(category.getCategory()) || c.getTag().equals(category.getTag())) {
-                return false;
+            	return activateCategory(category);
             }
         }
         id++;
@@ -145,10 +145,24 @@ public class Category {
     public static boolean deleteCategory(int categoryId) {
         for (Category c : categories) {
             if (c.getCategory_id() == categoryId) {
+            	if(c.getStatus()==0) {
+            		return false;
+            	}
                 c.setStatus(0);
                 return true;
             }
         }
         return false;
     }
+    
+    private static boolean activateCategory(Category category) {
+    	for (Category c : categories) {
+            if (c.getCategory().equals(category)) {
+                c.setStatus(1);
+                return true;
+            }
+        }
+    	return false;
+    }
+    
 }
