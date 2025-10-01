@@ -3,6 +3,8 @@ package com.product.api.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 
 /**
@@ -17,9 +19,20 @@ import jakarta.persistence.*;
 public class Category {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	// @jsonproperty nombre de variable de salida
+	@JsonProperty("category_id")
+	//nombre de columna (base )
+	@Column(name = "category_id")
     private int category_id;
+	@JsonProperty("category")
+	@Column(name = "category")
     private String category;
+	@JsonProperty("tag")
+	@Column(name = "tag")
     private String tag;
+	@JsonProperty("status")
+	@Column(name = "status")
     private int status;
 
     private static int id = 1;
