@@ -82,7 +82,7 @@ public class SvcCategoryImp implements SvcCategory{
 		try {
 			validateId(id);
 			repo.updateStatus(id, 0);
-			return new ApiResponse("La región ha sido activada");
+			return new ApiResponse("La región ha sido desactivada");
 
 		}catch (DataAccessException e) {
         		throw new DBAccessException(e);
