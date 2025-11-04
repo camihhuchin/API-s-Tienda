@@ -26,14 +26,22 @@ public class SecurityConfig {
 		.authorizeHttpRequests(
 				auth -> auth
 				.requestMatchers("/error", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/info", "/actuator/health").permitAll()
+				
+				.requestMatchers(HttpMethod.POST, "/usuario").permitAll()
+				.requestMatchers(HttpMethod.POST, "/login").permitAll()
+				.requestMatchers(HttpMethod.GET, "/usuario").hasAnyAuthority("ADMIN")
+				
 				.requestMatchers(HttpMethod.GET, "/category").hasAnyAuthority("ADMIN")
 				.requestMatchers(HttpMethod.GET, "/category/active").hasAnyAuthority("ADMIN", "CUSTOMER")
 
 				.requestMatchers(HttpMethod.GET, "/category/*").hasAnyAuthority("ADMIN", "CUSTOMER")
 				.requestMatchers("/category/**").hasAuthority("ADMIN")
 				
-				.requestMatchers("/customer-image/**").hasAnyAuthority("ADMIN", "CUSTOMER")
-
+				.requestMatchers(HttpMethod.GET, "/product/*").hasAnyAuthority("ADMIN", "CUSTOMER")
+				.requestMatchers("/product/**").hasAuthority("ADMIN")
+				
+				.requestMatchers(HttpMethod.GET, "/product-image/*").hasAnyAuthority("ADMIN", "CUSTOMER")
+				.requestMatchers("/product-image/**").hasAnyAuthority("ADMIN", "CUSTOMER")
 
 				)
 		.cors(cors -> cors.configurationSource(corsConfig))
