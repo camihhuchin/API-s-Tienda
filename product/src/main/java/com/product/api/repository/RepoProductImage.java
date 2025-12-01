@@ -16,8 +16,8 @@ public interface RepoProductImage extends JpaRepository<ProductImage,Integer>{
 	 @Query(value = "SELECT * FROM product_image WHERE product_id = :product_id AND status = 1", nativeQuery = true)
 	    ProductImage[] findByProductId(@Param("product_id") Integer productId);
 
-	    @Modifying
-	    @Transactional
-	    @Query(value = "UPDATE product_image SET status = 0 WHERE product_image_id = :product_image_id", nativeQuery = true)
-	    void disableProductImage(@Param("product_image_id") Integer productImageId);
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE product_image SET status = 0 WHERE product_image_id = :product_image_id", nativeQuery = true)
+    void disableProductImage(@Param("product_image_id") Integer productImageId);
 }
