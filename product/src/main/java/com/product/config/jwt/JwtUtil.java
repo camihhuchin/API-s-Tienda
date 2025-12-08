@@ -35,6 +35,11 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+    
+    public Integer extractUserId(String token) {
+        return extractClaims(token).get("id", Integer.class);
+    }
+
 
 	@SuppressWarnings("unchecked")
 	public List<HashMap<String, String>> extractPermisos(String token) {

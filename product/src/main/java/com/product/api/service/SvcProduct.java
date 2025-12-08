@@ -18,5 +18,8 @@ public interface SvcProduct {
 	public ResponseEntity<ApiResponse> updateProduct(Integer id, DtoProductIn in);
 	public ResponseEntity<ApiResponse> enableProduct(Integer id);
 	public ResponseEntity<ApiResponse> disableProduct(Integer id);
+	public ResponseEntity<DtoProductOut> getProductByGtin(String gtin);
+	public ResponseEntity<ApiResponse> reduceStock(String gtin, Integer quantity);
+
 
 }

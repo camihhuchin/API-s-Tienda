@@ -43,7 +43,6 @@ public class SvcProductImageImp implements SvcProductImage {
     @Override
     public ResponseEntity<ApiResponse> uploadProductImage(DtoProductImageIn in) {
         try {
-            // limpiar el prefijo data:image si existe
             if (in.getImage().startsWith("data:image")) {
                 int commaIndex = in.getImage().indexOf(",");
                 if (commaIndex != -1) {
