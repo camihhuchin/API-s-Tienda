@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.product.api.dto.in.DtoProductIn;
+import com.product.api.dto.out.DtoProductOut;
 import com.product.api.dto.out.DtoProductListOut;
 import com.product.api.entity.Product;
 
@@ -24,6 +25,11 @@ public class MapperProduct {
 					));
 		}
 		return list;
+	}
+	
+	public DtoProductOut fromProduct(Product products){
+		DtoProductOut product = new DtoProductOut();
+		return product;
 	}
 
 	public Product fromDto(DtoProductIn dto) {
@@ -44,5 +50,7 @@ public class MapperProduct {
 		product.setProduct_id(id);
 		return product;
 	}
+	
+	
 	
 }

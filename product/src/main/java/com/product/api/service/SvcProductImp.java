@@ -29,7 +29,7 @@ import com.product.exception.DBAccessException;
 
 @Service
 public class SvcProductImp implements SvcProduct{
-	
+
 	@Autowired
 	RepoProduct repo;
 	
@@ -54,13 +54,38 @@ public class SvcProductImp implements SvcProduct{
 
 	@Override
 	public ResponseEntity<DtoProductOut> getProduct(Integer id) {
+	    try {
+	        DtoProductOut product = repo.getProduct(id);
+	        if (product == null) {
+	            throw new ApiException(HttpStatus.NOT_FOUND, "El id del producto no existe");
+	        }
+
+	        String[] images = readProductImagesFiles(id);
+	        product.setImages(images);
+
+	        return new ResponseEntity<>(product, HttpStatus.OK);
+
+	    } catch (DataAccessException e) {
+	        e.printStackTrace();
+	        throw new DBAccessException(e);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, 
+	            "Error inesperado al obtener el producto: " + e.getMessage());
+	    }
+	}
+
+	
+	@Override
+	public ResponseEntity<DtoProductOut> getProductByGtin(String gtin) {
 		try {
-			DtoProductOut product = repo.getProduct(id);
+			DtoProductOut product = repo.getProductByGtin(gtin);
 			if(product==null) {
-				throw new ApiException(HttpStatus.NOT_FOUND, "El id del producto no existe");
+				throw new ApiException(HttpStatus.NOT_FOUND, "El gtin del producto no existe");
 			}
 			
-			String[] images= readProductImagesFiles(id);
+			String[] images= readProductImagesFilesByGtin(gtin);
 			product.setImages(images);
 			
 			return new ResponseEntity<>(product, HttpStatus.OK);
@@ -72,6 +97,45 @@ public class SvcProductImp implements SvcProduct{
 	private String[] readProductImagesFiles(Integer product_id) {
 		try {
 			ProductImage[] productImages = repoProductImage.findByProductId(product_id);
+			
+			if(productImages==null || productImages.length==0) {
+				return new String[0];
+			}
+			
+			String[] imagesUrl = new String[productImages.length];
+			
+			for(int i=0; i< productImages.length; i++) {
+				String imageUrl= productImages[i].getImage();
+				
+				if(imageUrl.startsWith("/")) {
+					imageUrl = imageUrl.substring(1);
+				}
+				
+				Path imagePath= Paths.get(uploadDir, imageUrl);
+				
+				if(!Files.exists(imagePath)) {
+					imagesUrl[i]= "";
+					continue;
+				}
+			
+				byte[] imageBytes= Files.readAllBytes(imagePath);
+				imagesUrl[i]= Base64.getEncoder().encodeToString(imageBytes);
+				
+				
+			}
+			
+			return imagesUrl ;
+		}catch(DataAccessException e) {
+			
+			throw new DBAccessException(e);	
+		}catch(IOException e ) {
+			throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al leer el archivo");
+		}
+	}
+	
+	private String[] readProductImagesFilesByGtin(String gtin) {
+		try {
+			ProductImage[] productImages = repoProductImage.findByProductGtin(gtin);
 			
 			if(productImages==null || productImages.length==0) {
 				return new String[0];
@@ -180,5 +244,26 @@ public class SvcProductImp implements SvcProduct{
 			throw new DBAccessException(e);
 		}
 	}
+	
 
+	@Override
+	public ResponseEntity<ApiResponse> reduceStock(String gtin, Integer quantity) {
+	    try {
+	        Product product = repo.findByGtin(gtin);
+	        if (product == null) {
+	            throw new ApiException(HttpStatus.NOT_FOUND, "El GTIN no existe");
+	        }
+	        
+	        if (product.getStock() < quantity) {
+	            throw new ApiException(HttpStatus.BAD_REQUEST, "Stock insuficiente");
+	        }
+	        product.setStock(product.getStock() - quantity);
+	        repo.save(product);
+
+	        return new ResponseEntity<>(new ApiResponse("Stock actualizado"), HttpStatus.OK);
+
+	    } catch (DataAccessException e) {
+	        throw new DBAccessException(e);
+	    }
+	}
 }

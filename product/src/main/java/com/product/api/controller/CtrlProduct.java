@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.product.api.commons.dto.ApiResponse;
@@ -68,6 +69,18 @@ public class CtrlProduct {
     @Operation(summary = "Actualizar producto", description = "Actualiza los datos de un producto existente identificado por su ID")
 	public ResponseEntity<ApiResponse> updateProduct(@PathVariable Integer id, @Valid @RequestBody DtoProductIn in) {
 		return svc.updateProduct(id, in);
+	}
+	
+	@GetMapping("/gtin/{gtin}")
+	public ResponseEntity<DtoProductOut> getProductByGtin(@PathVariable String gtin) {
+	    return svc.getProductByGtin(gtin);
+	}
+	
+	@PatchMapping("/{gtin}/reduce-stock")
+	public ResponseEntity<ApiResponse> reduceStock(
+	        @PathVariable String gtin,
+	        @RequestParam Integer quantity) {
+	    return svc.reduceStock(gtin, quantity);
 	}
 
 	
